@@ -13,15 +13,15 @@ const CPU_FREQUENCY = 168000000
 
 const (
 	// Mode Flag
-	GPIO_OUTPUT         = 0
-	GPIO_INPUT          = GPIO_INPUT_PULLDOWN
-	GPIO_INPUT_FLOATING = 1
-	GPIO_INPUT_PULLDOWN = 2
-	GPIO_INPUT_PULLUP   = 3
+	PinOutput        = 0
+	PinInput         = PinInputFloating
+	PinInputFloating = 1
+	PinInputPulldown = 2
+	PinInputPullup   = 3
 
 	// for UART
-	GPIO_UART_TX = 4
-	GPIO_UART_RX = 5
+	PinModeUartTX = 4
+	PinModeUartRX = 5
 
 	//GPIOx_MODER
 	GPIO_MODE_INPUT          = 0
@@ -45,8 +45,8 @@ const (
 	GPIO_PULL_DOWN = 2
 )
 
-func (p GPIO) getPort() *stm32.GPIO_Type {
-	switch p.Pin / 16 {
+func (p Pin) getPort() *stm32.GPIO_Type {
+	switch p / 16 {
 	case 0:
 		return stm32.GPIOA
 	case 1:
@@ -71,8 +71,8 @@ func (p GPIO) getPort() *stm32.GPIO_Type {
 }
 
 // enableClock enables the clock for this desired GPIO port.
-func (p GPIO) enableClock() {
-	switch p.Pin / 16 {
+func (p Pin) enableClock() {
+	switch p / 16 {
 	case 0:
 		stm32.RCC.AHB1ENR |= stm32.RCC_AHB1ENR_GPIOAEN
 	case 1:
@@ -97,11 +97,11 @@ func (p GPIO) enableClock() {
 }
 
 // Configure this pin with the given configuration.
-func (p GPIO) Configure(config GPIOConfig) {
+func (p Pin) Configure(config PinConfig) {
 	// Configure the GPIO pin.
 	p.enableClock()
 	port := p.getPort()
-	pin := p.Pin % 16
+	pin := p % 16
 	pos := pin * 2
 
 	if config.Mode == GPIO_INPUT_FLOATING {
@@ -128,7 +128,7 @@ func (p GPIO) Configure(config GPIOConfig) {
 	}
 }
 
-func (p GPIO) setAltFunc(af uint32) {
+func (p Pin) setAltFunc(af uint32) {
 	port := p.getPort()
 	pin := p.Pin % 16
 	pos := pin * 4
@@ -141,9 +141,9 @@ func (p GPIO) setAltFunc(af uint32) {
 
 // Set the pin to high or low.
 // Warning: only use this on an output pin!
-func (p GPIO) Set(high bool) {
+func (p Pin) Set(high bool) {
 	port := p.getPort()
-	pin := p.Pin % 16
+	pin := p % 16
 	if high {
 		port.BSRR = 1 << pin
 	} else {

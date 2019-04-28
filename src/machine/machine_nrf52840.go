@@ -10,15 +10,15 @@ import (
 const CPU_FREQUENCY = 64000000
 
 // Get peripheral and pin number for this GPIO pin.
-func (p GPIO) getPortPin() (*nrf.GPIO_Type, uint8) {
-	if p.Pin >= 32 {
-		return nrf.P1, p.Pin - 32
+func (p Pin) getPortPin() (*nrf.GPIO_Type, uint32) {
+	if p >= 32 {
+		return nrf.P1, uint32(p - 32)
 	} else {
-		return nrf.P0, p.Pin
+		return nrf.P0, uint32(p)
 	}
 }
 
-func (uart UART) setPins(tx, rx uint32) {
+func (uart UART) setPins(tx, rx Pin) {
 	nrf.UART0.PSEL.TXD = nrf.RegValue(tx)
 	nrf.UART0.PSEL.RXD = nrf.RegValue(rx)
 }
@@ -28,13 +28,13 @@ func handleUART0() {
 	UART0.handleInterrupt()
 }
 
-func (i2c I2C) setPins(scl, sda uint8) {
+func (i2c I2C) setPins(scl, sda Pin) {
 	i2c.Bus.PSEL.SCL = nrf.RegValue(scl)
 	i2c.Bus.PSEL.SDA = nrf.RegValue(sda)
 }
 
 // SPI
-func (spi SPI) setPins(sck, mosi, miso uint8) {
+func (spi SPI) setPins(sck, mosi, miso Pin) {
 	if sck == 0 {
 		sck = SPI0_SCK_PIN
 	}

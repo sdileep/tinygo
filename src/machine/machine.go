@@ -1,18 +1,16 @@
 package machine
 
-type GPIOConfig struct {
-	Mode GPIOMode
+type PinConfig struct {
+	Mode PinMode
 }
 
-type GPIO struct {
-	Pin uint8
-}
+type Pin int8
 
-func (p GPIO) High() {
+func (p Pin) High() {
 	p.Set(true)
 }
 
-func (p GPIO) Low() {
+func (p Pin) Low() {
 	p.Set(false)
 }
 
